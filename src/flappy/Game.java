@@ -5,8 +5,10 @@ import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 
 import flappy.display.Display;
+import flappy.entities.Background;
 import flappy.entities.Bird;
 import flappy.entities.Pipe;
+import flappy.gfx.Assets;
 import flappy.keyInput.KeyInput;
 
 public class Game implements Runnable{
@@ -26,6 +28,7 @@ public class Game implements Runnable{
 	
 	private Bird bird;
 	private ArrayList<Pipe> pipes;
+	private Background bg;
 	
 	
 	public Game(String title, int width, int height){
@@ -39,13 +42,15 @@ public class Game implements Runnable{
 	private void init(){
 		display = new Display(title, width, height);
 		display.getFrame().addKeyListener(keyboard);
+		Assets.init();
 		
 		handler = new Handler(this);
 		bird = new Bird(handler);
 		
+		bg = new Background(handler);
+		
 		pipes = new ArrayList<Pipe>();
 		pipes.add(new Pipe(handler));
-		
 		
 	}
 	
@@ -67,6 +72,8 @@ public class Game implements Runnable{
 		//clear the screen before we draw
 		g.clearRect(0, 0, width, height);
 		//draw here
+		bg.render(g);
+		
 		bird.render(g);
 		
 		
