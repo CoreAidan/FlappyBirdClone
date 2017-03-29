@@ -1,6 +1,7 @@
 package flappy;
 
 import flappy.keyInput.KeyInput;
+import flappy.keyInput.MouseManager;
 
 public class Handler {
 	
@@ -8,6 +9,10 @@ public class Handler {
 	
 	public Handler(Game game){
 		this.game = game;
+	}
+	
+	public MouseManager getMouseManager(){
+		return game.getMouseManager();
 	}
 	
 	public KeyInput getKeyboard(){
@@ -25,9 +30,17 @@ public class Handler {
 	public Game getGame() {
 		return game;
 	}
+	
+	public void setPaused(boolean b){
+		this.game.setPaused(b);
+	}
 
 	public void setGame(Game game) {
 		this.game = game;
+	}
+	
+	public void reset(){
+		game.restart();
 	}
 
 }

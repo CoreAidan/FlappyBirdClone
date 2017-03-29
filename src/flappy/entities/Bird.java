@@ -2,6 +2,7 @@ package flappy.entities;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 import flappy.Handler;
 import flappy.gfx.Animation;
@@ -15,9 +16,9 @@ public class Bird {
 	//private static final float SPEED = 3.0f;
 	//private static final int SCALE = 2;
 	
-	private static final float GRAVITY = 1.1f;
+	private static final float GRAVITY = 0.9f;
 	private static final float RESISTANCE = 0.9f;
-	private static final int LIFT = -5;
+	private static final int LIFT = -3;
 	private float velocity = 0;
 	
 	private Animation up;
@@ -37,13 +38,13 @@ public class Bird {
 		up = new Animation(100, Assets.birdUp);
 		fall = new Animation(100, Assets.birdFall);
 		
-		currentAnimation = fall;
+		currentAnimation = up;
+		currentAnimation.start();
 	}
 	
 	public void up(){
 		if(handler.getKeyboard().up){
 			currentAnimation = up;
-			currentAnimation.start();
 			velocity += LIFT;
 		}else{
 			currentAnimation = fall;
@@ -58,8 +59,8 @@ public class Bird {
 		
 		up();
 		
-		if(y > handler.getHeight() - HEIGHT){
-			y = handler.getHeight() - HEIGHT -1;
+		if(y > handler.getHeight() - HEIGHT - 30){
+			y = handler.getHeight() - HEIGHT - 31;
 			this.velocity = 0;
 		}
 		
@@ -68,13 +69,19 @@ public class Bird {
 			this.velocity = 0;
 		}
 		
-		currentAnimation.update();
 	}
 	
 	public void render(Graphics g){
 		//g.setColor(Color.BLACK);
 		//g.fillOval((int)x, (int)y, WIDTH, HEIGHT);
+		currentAnimation.update();
 		g.drawImage(currentAnimation.getCurrentFrame(), (int) x,(int) y, WIDTH, HEIGHT, null);
+		//g.setColor(Color.RED);
+		//g.fillRect((int)x + WIDTH / 3, (int)y + HEIGHT / 3, WIDTH / 2, HEIGHT / 2);
+	}
+	
+	public Rectangle getBounds(){
+		return new Rectangle((int)x + WIDTH / 3, (int)y + HEIGHT / 3, WIDTH / 2, HEIGHT / 2);
 	}
 	
 	public float getY(){
@@ -83,5 +90,12 @@ public class Bird {
 	
 	public float getX(){
 		return x;
+	}
+	public static int getWidth() {
+		return WIDTH;
+	}
+
+	public static int getHeight() {
+		return HEIGHT;
 	}
 }

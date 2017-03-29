@@ -10,6 +10,10 @@ import flappy.entities.Bird;
 import flappy.entities.Pipe;
 import flappy.gfx.Assets;
 import flappy.keyInput.KeyInput;
+import flappy.keyInput.MouseManager;
+import flappy.states.GameState;
+import flappy.states.MenuState;
+import flappy.states.State;
 
 public class Game implements Runnable{
 	
@@ -21,15 +25,15 @@ public class Game implements Runnable{
 	private Graphics g;
 	
 	private boolean running = false;
+	private boolean paused = false;
 	private Thread thread;
 	
 	private KeyInput keyboard;
+	private MouseManager mouseManager;
 	private Handler handler;
 	
-	private Bird bird;
-	private ArrayList<Pipe> pipes;
-	private Background bg;
-	
+	public State gameState;
+	public State menuState;
 	
 	public Game(String title, int width, int height){
 		this.title = title;
@@ -37,29 +41,42 @@ public class Game implements Runnable{
 		this.height = height;
 		
 		keyboard = new KeyInput();
+		mouseManager = new MouseManager();
 	}
 	
 	private void init(){
 		display = new Display(title, width, height);
 		display.getFrame().addKeyListener(keyboard);
+		display.getFrame().addMouseListener(mouseManager);
+		display.getFrame().addMouseMotionListener(mouseManager);
+		display.getCanvas().addMouseListener(mouseManager);
+		display.getCanvas().addMouseMotionListener(mouseManager);
+		
 		Assets.init();
 		
 		handler = new Handler(this);
-		bird = new Bird(handler);
 		
-		bg = new Background(handler);
-		
-		pipes = new ArrayList<Pipe>();
-		pipes.add(new Pipe(handler));
-		
+		gameState = new GameState(handler);
+		menuState = new MenuState(handler);
+		State.setState(menuState);
 	}
+	
+	public void restart(){
+		Assets.init();
+		paused = false;
+		gameState = new GameState(handler);
+		menuState = new MenuState(handler);
+		State.setState(menuState);
+	}
+	
 	
 	private void update(){
 		keyboard.update();
-		bird.update();
-		for(int i = 0; i < pipes.size(); i ++){
-			pipes.get(i).update();
-		}
+			if(State.getState() != null){
+				if(!paused)
+					State.getState().update();
+			}
+		
 	}
 	
 	private void render(){
@@ -72,26 +89,8 @@ public class Game implements Runnable{
 		//clear the screen before we draw
 		g.clearRect(0, 0, width, height);
 		//draw here
-		bg.render(g);
-		
-		bird.render(g);
-		
-		
-		if(pipes.size() <= 1 && pipes.get(0).reachedMiddleOfScreen()){
-			pipes.add(new Pipe(handler));
-		}
-		
-		if(pipes.get(0).isOffScreen()){
-			pipes.remove(0);
-		}
-		
-		for(int i = 0; i < pipes.size(); i ++){
-			
-			if(pipes.get(i).hits(bird)){
-				System.out.println("hits");
-			}
-			pipes.get(i).render(g);
-			
+		if(State.getState() != null){
+			State.getState().render(g);
 		}
 		//end drawing
 		bs.show();
@@ -122,13 +121,17 @@ public class Game implements Runnable{
 			}
 			
 			if(timer >= 1000000000){
-				System.out.println("Updates and Frames: " + updates);
+				//System.out.println("Updates and Frames: " + updates);
 				updates = 0;
 				timer = 0;
 			}
 		}
 		
 		stop();
+	}
+	
+	public MouseManager getMouseManager(){
+		return mouseManager;
 	}
 	
 	public KeyInput getKeyboard(){
@@ -141,6 +144,10 @@ public class Game implements Runnable{
 	
 	public int getHeight(){
 		return height;
+	}
+	
+	public void setPaused(boolean b){
+		this.paused = b;
 	}
 	
 	

@@ -6,25 +6,30 @@ import java.awt.image.BufferedImage;
 import flappy.Handler;
 import flappy.gfx.Assets;
 
-public class Background {
+public class Floor {
 	
-	private static final int SPEED = 1;
+	private static int SPEED = 2;
+	
 	private int width = 0;
 	private int height = 0;
 	
 	private int x;
 	private int y;
 	
-	private BufferedImage bg;
+	private BufferedImage floor;
+	private Handler handler;
 	
-	
-	public Background(Handler handler){
-		bg = Assets.background;
+	public Floor(Handler handler){
 		
-		width = handler.getWidth();
-		height = handler.getHeight();
+		this.handler = handler;
 		
+		floor = Assets.floor;
+		
+		width = handler.getWidth() * 2;
+		height = 250;
 		x = 0;
+		y = handler.getHeight() - 50;
+		
 	}
 	
 	public boolean isOffScreen(){
@@ -44,11 +49,12 @@ public class Background {
 	}
 	
 	
+	public void render(Graphics g){
+		g.drawImage(floor, x, y,width, height, null);
+	}
+	
 	public void update(){
 		x -= SPEED;
 	}
-	
-	public void render(Graphics g){
-		g.drawImage(bg, x, y, width, height, null);
-	}
+
 }

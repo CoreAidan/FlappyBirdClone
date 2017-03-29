@@ -19,7 +19,7 @@ public class KeyInput implements KeyListener{
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		System.out.println("pressed");
+		//System.out.println("pressed");
 		keys[e.getKeyCode()] = true;
 	}
 
